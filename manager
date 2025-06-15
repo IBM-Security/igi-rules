@@ -1,0 +1,34 @@
+when
+userBean : UserBean()
+then
+try {
+ExternalInfo externalInfo = UserAction.findExternalInfo(sql, userBean);
+logger.debug("-----------------------------------------------------------------------------");
+
+// Get manager's employee ID
+String gestorUser = (String) externalInfo.getAttribute("Matricula Gestor");
+String NomeGestor = (String) externalInfo.getAttribute("Gestor");
+logger.debug("Manager p1: " + gestorUser);
+logger.debug("-----------------------------------------------------------------------------");
+
+// Search for the manager's UserBean
+if (gestorUser != null && !gestorUser.isEmpty()) {
+    UserBean beneficiaryBean = UtilAction.findUserByCode(sql, gestorUser);
+    logger.debug("Manager p2: " + beneficiaryBean);
+    logger.debug("-----------------------------------------------------------------------------");
+
+    if (beneficiaryBean != null) {
+        // Display email or other attributes
+        String emailGestor = (String) beneficiaryBean.getAttribute("Email");
+        logger.debug("Manager's email: p3 " + emailGestor);
+        logger.debug("-----------------------------------------------------------------------------");
+    } else {
+        logger.debug("Manager user not found.");
+    }
+} else {
+    logger.debug("Manager's employee ID not provided.");
+}
+} catch (Exception e) {
+logger.error("Live Events Rule - Manager Email: " + e);
+throw new Exception("Live Events Rule - Manager Email: " + e.getMessage());
+}
